@@ -4,8 +4,11 @@ obj = $(subst src,obj,$(src:.c=.o))
 CFLAGS = -g -Wall -pedantic -Wno-deprecated-declarations
 LDFLAGS = -L./lib/noise -framework audiotoolbox -framework corefoundation
 
-audio: $(obj) libnoise
-	$(CC) $(CFLAGS) -o $@ $(filter-out lib%, $^) -lnoise $(LDFLAGS)
+audio: obj $(obj) libnoise
+	$(CC) $(CFLAGS) -o $@ $(obj) -lnoise $(LDFLAGS)
+
+obj:
+	mkdir obj
 
 obj/%.o: src/%.c
 	$(CC) $(CFLAGS) -o $@ -c $<
