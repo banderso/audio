@@ -64,8 +64,16 @@ internal float SawWave(float amplitude, float period, float phase) {
   return -((2.0f * amplitude) / M_PI) * atanf(cotf((phase * M_PI) / period));
 }
 
-internal float NoiseWave(float amplitude, float period, float phase) {
-  return perlin(amplitude, period, phase);
+internal float PerlinWave(float amplitude, float period, float phase) {
+  return perlin(amplitude, period, phase * 0.05f);
+}
+
+internal float WhiteNoise(float amplitude, float period, float phase) {
+  return gaussian(0.0f, 1.0f);
+}
+
+internal float BrownianNoise(float amplitude, float period, float phase) {
+  return brownian(amplitude, period);
 }
 
 global float gVolume = 1.0f;
@@ -88,8 +96,8 @@ internal void SineQueueCallback(void *aqData,
   float fStepR = gFStep;
 
   for (int s = 0; s < kBufferSizeInFrames * 2; s +=2) {
-    float sampleL = NoiseWave(volumeL, kTau, phaseL);//SawWave(volumeL, kTau, phaseL) + SineWave(volumeL, 128.0f * M_PI, phaseL);
-    float sampleR = NoiseWave(volumeR, kTau, phaseR);//SawWave(volumeR, kTau, phaseR) + SineWave(volumeL, 128.0f * M_PI, phaseL);
+    float sampleL = BrownianNoise(volumeL, fStepL, phaseL);
+    float sampleR = BrownianNoise(volumeR, fStepR, phaseR);
 
     short sampleIL = (short)(sampleL * 32767.0f);
     short sampleIR = (short)(sampleR * 32767.0f);
@@ -101,7 +109,7 @@ internal void SineQueueCallback(void *aqData,
     phaseR += fStepR;
   }
 
-  gPhase = fmodf(phaseL, 65536.0f);
+  gPhase = fmodf(phaseL, kTau);
 
   AudioQueueEnqueueBuffer(outAQ, outBuffer, 0, NULL);
 }
