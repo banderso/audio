@@ -1,0 +1,3 @@
+[submodule "lib/noise"]
+	path = lib/noise
+	url = git@github.com:banderso/libnoise.git
