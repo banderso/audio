@@ -11,9 +11,11 @@
 #define local static
 
 global const float kTau = 2.0f * M_PI;
-global const int kNumberBuffers = 3;
-global const int kBufferSizeInFrames = 512;
-global const int kSampleRate = 44100;
+enum {
+  kNumberBuffers = 3,
+  kBufferSizeInFrames = 512,
+  kSampleRate = 44100,
+};
 
 typedef enum MusicalNote_ {
   A = 0,
@@ -126,7 +128,7 @@ internal float CalcFrequencyFromNote(MusicalNote semiTones, SInt32 octave) {
 }
 
 internal void PlaySine(void) {
-  AQPlayerState aqData = {};
+  AQPlayerState aqData = {0};
   aqData.mDataFormat.mSampleRate = kSampleRate;
   aqData.mDataFormat.mFormatID = kAudioFormatLinearPCM;
   aqData.mDataFormat.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;

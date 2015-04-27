@@ -1,7 +1,7 @@
 src = $(wildcard ./src/*.c)
 obj = $(subst src,obj,$(src:.c=.o))
 
-CFLAGS = -g -Wall -pedantic -Wno-deprecated-declarations
+CFLAGS = -g -Wall -pedantic -Wno-deprecated-declarations -Wno-missing-braces
 LDFLAGS = -L./lib/noise -framework audiotoolbox -framework corefoundation
 
 audio: obj $(obj) libnoise
