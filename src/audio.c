@@ -12,7 +12,7 @@
 
 global const float kTau = 2.0f * M_PI;
 enum {
-  kNumberBuffers = 3,
+  kNumberBuffers = 4,
   kBufferSizeInFrames = 512,
   kSampleRate = 44100,
 };
@@ -66,7 +66,7 @@ internal float SawWave(float amplitude, float period, float phase) {
   return -((2.0f * amplitude) / M_PI) * atanf(cotf((phase * M_PI) / period));
 }
 
-internal float PerlinWave(float amplitude, float period, float phase) {
+internal float PerlinNoise(float amplitude, float period, float phase) {
   return perlin(amplitude, period, phase * 0.05f);
 }
 
@@ -98,8 +98,8 @@ internal void SynthCallback(void *aqData,
   float fStepR = gFStep;
 
   for (int s = 0; s < kBufferSizeInFrames * 2; s +=2) {
-    float sampleL = BrownianNoise(volumeL, fStepL, phaseL);
-    float sampleR = BrownianNoise(volumeR, fStepR, phaseR);
+    float sampleL = SineWave(volumeL, fStepL, phaseL);
+    float sampleR = SineWave(volumeR, fStepR, phaseR);
 
     short sampleIL = (short)(sampleL * 32767.0f);
     short sampleIR = (short)(sampleR * 32767.0f);
