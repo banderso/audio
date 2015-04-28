@@ -51,7 +51,7 @@ typedef struct AQPlayerState_ {
 } AQPlayerState;
 
 internal float SineWave(float amplitude, float period, float phase) {
-  return amplitude * sinf((kTau / period) * phase);
+  return amplitude * sinf((kTau / period) + phase);
 }
 
 internal float TringleWave(float amplitude, float period, float phase) {
@@ -75,15 +75,15 @@ internal float WhiteNoise(float amplitude, float period, float phase) {
 }
 
 internal float BrownianNoise(float amplitude, float period, float phase) {
-  return brownian(amplitude, period);
+  return brownian(amplitude, period / kTau);
 }
 
 global float gVolume = 1.0f;
 global float gPhase = 0.0f;
 global float gFStep = 0.0f;
-internal void SineQueueCallback(void *aqData,
-                                AudioQueueRef outAQ,
-                                AudioQueueBufferRef outBuffer) {
+internal void SynthCallback(void *aqData,
+                            AudioQueueRef outAQ,
+                            AudioQueueBufferRef outBuffer) {
   AQPlayerState *pAqData = (AQPlayerState *)aqData;
   if (!pAqData->mIsRunning) return;
   
@@ -118,7 +118,7 @@ internal void SineQueueCallback(void *aqData,
 
 internal void SetWave(float frequency, float volume) {
   gVolume = volume;
-  gFStep = frequency / kSampleRate;
+  gFStep = kTau * frequency / kSampleRate;
 }
 
 internal float CalcFrequencyFromNote(MusicalNote semiTones, SInt32 octave) {
@@ -141,7 +141,7 @@ internal void PlaySine(void) {
   SetWave(CalcFrequencyFromNote(C, 4), 0.5f);
 
   OSStatus result = AudioQueueNewOutput(&aqData.mDataFormat,
-                                        &SineQueueCallback,
+                                        &SynthCallback,
                                         &aqData,
                                         CFRunLoopGetCurrent(),
                                         kCFRunLoopCommonModes,
@@ -158,7 +158,7 @@ internal void PlaySine(void) {
     if (result) return;
     //aqData.mBuffers[i]->mAudioDataByteSize = aqData.bufferByteSize;
 
-    SineQueueCallback(&aqData, aqData.mQueue, aqData.mBuffers[i]);
+    SynthCallback(&aqData, aqData.mQueue, aqData.mBuffers[i]);
   }
 
   result = AudioQueueSetParameter(aqData.mQueue, kAudioQueueParam_Volume, 1.0f);
