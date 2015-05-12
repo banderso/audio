@@ -3,6 +3,6 @@
 	url = git@github.com:banderso/libnoise.git
 
 [submodule "lib/input"]
-    path = lib/input
-    url = git@github.com:banderso/libinput.git
+	path = lib/input
+	url = git@github.com:banderso/libinput.git
     
